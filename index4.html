@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background-color: #00264d; /* Default dark mode */
+      color: white;
+      transition: background-color 0.4s, color 0.4s;
+    }
+
+    body.light-mode {
+      background-color: #f0f8ff; /* Light aqua for light mode */
+      color: #00264d;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #0056b3;
+      margin: 0;
+    }
+    nav ul li {
+      margin: 0 10px;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+    }
+    nav ul li a:hover {
+      background-color: #004494;
+    }
+
+    #main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: #66967e; /* Updated hex green */
+      color: white;
+    }
+
+    #main-header h2 {
+      margin: 0;
+    }
+
+    #date-container, #mode-toggle, #submit-container {
+      display: flex;
+      align-items: center;
+    }
+
+    #date-container label, #mode-toggle label {
+      margin-right: 10px;
+    }
+
+    #date-container input {
+      padding: 5px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 34px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: '';
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #007bff;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(14px);
+    }
+
+    #main-content {
+      padding: 25px; /* Added spacing */
+      overflow-y: auto;
+      height: calc(100vh - 140px);
+    }
+
+    .header-row {
+      display: flex;
+      position: sticky;
+      top: 0;
+      font-weight: bold;
+      background-color: #60d660; /* Updated neon green header color */
+      padding: 10px;
+      border-radius: 6px;
+      color: white;
+      z-index: 1;
+      margin-bottom: 15px; /* Added spacing */
+    }
+
+    .header-cell {
+      flex: 1;
+      text-align: center;
+    }
+
+    .student-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .student-cell, .amount-cell, .balance-cell {
+      flex: 1;
+      text-align: center;
+    }
+
+    .amount-cell input {
+      width: 80%;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    .balance-cell span {
+      font-weight: bold;
+    }
+
+    .balance-green {
+      color: #026C3D; /* Neon green */
+    }
+
+    .balance-red {
+      color: red;
+    }
+
+    #submit-container {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+    }
+
+    #submitButton {
+      padding: 10px 20px;
+      font-size: 14px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 20px;
+    }
+
+    #footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #66967e; /* Updated hex green */
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #grand-total {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<nav>
+    <ul>
+      <li><a href="https://script.google.com/macros/s/AKfycbzPmtr2q3VwYlLJg9KRaGddVrGJejwcNWuyt1lqo0-KnIksDJhx9MGzHkj6jiY8IwBgAw/exec?page=webapp_ui" target="_top">Home</a></li>
+      <li><a href="https://script.google.com/macros/s/AKfycbzPmtr2q3VwYlLJg9KRaGddVrGJejwcNWuyt1lqo0-KnIksDJhx9MGzHkj6jiY8IwBgAw/exec?page=vendor_ui" target="_top">Vendor Record</a></li>
+      <li><a href="https://script.google.com/macros/s/AKfycbzPmtr2q3VwYlLJg9KRaGddVrGJejwcNWuyt1lqo0-KnIksDJhx9MGzHkj6jiY8IwBgAw/exec?page=transactions_ui" target="_top">Transactions</a></li>
+    </ul>
+  </nav>
+
+<body class="dark-mode">
+
+  <div id="main-header">
+    <h2>Transaction Manager</h2>
+    <div id="date-container">
+      <label for="date">Date*</label>
+      <input type="date" id="date" required>
+    </div>
+    <div id="submit-container">
+      <button id="submitButton">Submit</button>
+    </div>
+    <div id="mode-toggle">
+      <label>Mode:</label>
+      <label class="switch">
+        <input type="checkbox" id="mode-switch">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="header-row">
+      <div class="header-cell">Student (Class)</div>
+      <div class="header-cell">Debit Amount</div>
+      <div class="header-cell">Credit Amount</div>
+      <div class="header-cell">Total Balance</div>
+    </div>
+    <div id="student-table"></div>
+  </div>
+
+  <div id="footer">
+    <div id="grand-total">Grand Total = ₹0</div>
+    <div id="developer-note">&#169; Designed by Radhika</div>
+  </div>
+
+  <script>
+    const modeSwitch = document.getElementById('mode-switch');
+
+    // Load saved mode preference
+    document.body.classList.toggle('light-mode', localStorage.getItem('mode') === 'light-mode');
+    modeSwitch.checked = localStorage.getItem('mode') === 'light-mode';
+
+    modeSwitch.addEventListener('change', function() {
+      const isLightMode = this.checked;
+      document.body.classList.toggle('light-mode', isLightMode);
+      localStorage.setItem('mode', isLightMode ? 'light-mode' : 'dark-mode');
+    });
+
+    function fetchStudentData() {
+      google.script.run.withSuccessHandler(populateStudentList).getStudentList();
+    }
+
+    function populateStudentList(students) {
+      const studentTable = document.getElementById('student-table');
+      studentTable.innerHTML = '';
+
+      students.forEach(student => {
+        if (!student.name || !student.class) return; // Skip blank entries
+
+        const row = document.createElement('div');
+        row.className = 'student-row';
+
+        const nameCell = document.createElement('div');
+        nameCell.className = 'student-cell';
+        nameCell.textContent = `${student.name} (${student.class})`;
+
+        const debitCell = document.createElement('div');
+        debitCell.className = 'amount-cell';
+        const debitInput = document.createElement('input');
+        debitInput.type = 'number';
+        debitInput.placeholder = 'Debit Amount (₹)';
+        debitCell.appendChild(debitInput);
+
+        const creditCell = document.createElement('div');
+        creditCell.className = 'amount-cell';
+        const creditInput = document.createElement('input');
+        creditInput.type = 'number';
+        creditInput.placeholder = 'Credit Amount (₹)';
+        creditCell.appendChild(creditInput);
+
+        const balanceCell = document.createElement('div');
+        balanceCell.className = 'balance-cell';
+        const balance = student.balance || 0;
+        const balanceSpan = document.createElement('span');
+        balanceSpan.textContent = `₹${balance}`;
+        balanceSpan.className = balance < 0 ? 'balance-red' : 'balance-green';
+        balanceCell.appendChild(balanceSpan);
+
+        row.appendChild(nameCell);
+        row.appendChild(debitCell);
+        row.appendChild(creditCell);
+        row.appendChild(balanceCell);
+        studentTable.appendChild(row);
+      });
+
+      updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+      const balances = document.querySelectorAll('.balance-cell span');
+      let total = 0;
+      balances.forEach(balance => {
+        total += parseFloat(balance.textContent.replace('₹', '')) || 0;
+      });
+      const grandTotal = document.getElementById('grand-total');
+      grandTotal.style.color = total < 0 ? 'red' : '#026C3D';
+      grandTotal.textContent = `Grand Total = ₹${total}`;
+    }
+
+    fetchStudentData();
+
+  document.getElementById('submitButton').addEventListener('click', function() {
+    const date = document.getElementById('date').value;
+    if (!date) {
+      alert('Date is required!');
+      return;
+    }
+
+    const entries = [];
+    const rows = document.querySelectorAll('.student-row');
+    rows.forEach(row => {
+      const student = row.querySelector('.student-cell').textContent;
+      const debit = row.querySelector('.amount-cell input:nth-child(1)').value;
+      const credit = row.querySelectorAll('.amount-cell input')[1].value; // Fixed accessing second input
+      if (debit || credit) {
+        entries.push({ date, student, debit: debit || 0, credit: credit || 0 }); // Ensure values are 0 if empty
+      }
+    });
+
+    if (entries.length > 0) {
+      google.script.run.withSuccessHandler(() => {
+        alert('Transactions saved!');
+        fetchStudentData(); // Refresh the data after saving
+      }).saveEntries(entries);
+    } else {
+      alert('No entries to save!');
+    }
+
+    });
+
+    // Initial fetch on page load
+    fetchStudentData();
+  </script>
+</body>
+</html>
